@@ -12,9 +12,14 @@
 		BB1BE0952103296C002A96E1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB1BE0932103296C002A96E1 /* Main.storyboard */; };
 		BB1BE0972103296D002A96E1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB1BE0962103296D002A96E1 /* Assets.xcassets */; };
 		BB1BE09A2103296D002A96E1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB1BE0982103296D002A96E1 /* LaunchScreen.storyboard */; };
+		BB1BE0A221032EA3002A96E1 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = BB1BE0A121032EA3002A96E1 /* Podfile */; };
+		C191640804EE1CB8877AF27A /* libPods-wheresavery.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 87AF22EEC4C0B251771B065A /* libPods-wheresavery.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		87AF22EEC4C0B251771B065A /* libPods-wheresavery.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-wheresavery.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9EEBD1AB77CCBFE1D8792974 /* Pods-wheresavery.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wheresavery.debug.xcconfig"; path = "Pods/Target Support Files/Pods-wheresavery/Pods-wheresavery.debug.xcconfig"; sourceTree = "<group>"; };
+		B167C9AE74EB06681722C595 /* Pods-wheresavery.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wheresavery.release.xcconfig"; path = "Pods/Target Support Files/Pods-wheresavery/Pods-wheresavery.release.xcconfig"; sourceTree = "<group>"; };
 		BB1BE08C2103296C002A96E1 /* wheresavery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wheresavery.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB1BE08F2103296C002A96E1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BB1BE0912103296C002A96E1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -22,6 +27,7 @@
 		BB1BE0962103296D002A96E1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BB1BE0992103296D002A96E1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BB1BE09B2103296D002A96E1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB1BE0A121032EA3002A96E1 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,17 +35,30 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C191640804EE1CB8877AF27A /* libPods-wheresavery.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		689F97A503549BCE63EC31EF /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9EEBD1AB77CCBFE1D8792974 /* Pods-wheresavery.debug.xcconfig */,
+				B167C9AE74EB06681722C595 /* Pods-wheresavery.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		BB1BE0832103296C002A96E1 = {
 			isa = PBXGroup;
 			children = (
+				BB1BE0A121032EA3002A96E1 /* Podfile */,
 				BB1BE08E2103296C002A96E1 /* wheresavery */,
 				BB1BE08D2103296C002A96E1 /* Products */,
+				689F97A503549BCE63EC31EF /* Pods */,
+				E390BDD6E8DE7A61C7423E82 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -64,6 +83,14 @@
 			path = wheresavery;
 			sourceTree = "<group>";
 		};
+		E390BDD6E8DE7A61C7423E82 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				87AF22EEC4C0B251771B065A /* libPods-wheresavery.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -71,9 +98,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BB1BE09E2103296D002A96E1 /* Build configuration list for PBXNativeTarget "wheresavery" */;
 			buildPhases = (
+				09FD8683F998C12DCCAD00EF /* [CP] Check Pods Manifest.lock */,
 				BB1BE0882103296C002A96E1 /* Sources */,
 				BB1BE0892103296C002A96E1 /* Frameworks */,
 				BB1BE08A2103296C002A96E1 /* Resources */,
+				39D7944FC42D82FF5AC7F7F0 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -124,11 +153,53 @@
 			files = (
 				BB1BE09A2103296D002A96E1 /* LaunchScreen.storyboard in Resources */,
 				BB1BE0972103296D002A96E1 /* Assets.xcassets in Resources */,
+				BB1BE0A221032EA3002A96E1 /* Podfile in Resources */,
 				BB1BE0952103296C002A96E1 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		09FD8683F998C12DCCAD00EF /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-wheresavery-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		39D7944FC42D82FF5AC7F7F0 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-wheresavery/Pods-wheresavery-resources.sh",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlaces.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-wheresavery/Pods-wheresavery-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BB1BE0882103296C002A96E1 /* Sources */ = {
@@ -278,6 +349,7 @@
 		};
 		BB1BE09F2103296D002A96E1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9EEBD1AB77CCBFE1D8792974 /* Pods-wheresavery.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -295,6 +367,7 @@
 		};
 		BB1BE0A02103296D002A96E1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B167C9AE74EB06681722C595 /* Pods-wheresavery.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
