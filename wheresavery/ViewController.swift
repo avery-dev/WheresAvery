@@ -8,22 +8,29 @@
 
 import UIKit
 import GoogleMaps
+import Firebase
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
-    @IBOutlet var mapView: GMSMapView!
-    @IBOutlet weak var recenterButton: UIButton!
+    private var db: Firestore!
     private var initialRecenterDone = false
     private var currentLocation: CLLocationCoordinate2D?
     
+    // UI components
+    @IBOutlet var mapView: GMSMapView!
+    @IBOutlet weak var recenterButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.addSubview(recenterButton)
+        // Firebase initialization
+        db = Firestore.firestore()
         
+        // UI
+        self.view.addSubview(recenterButton)
         self.view = mapView
         self.mapView?.isMyLocationEnabled = true
         
-        //Location Manager code to fetch current location
+        // Location Manager code to fetch current location
         self.locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         self.locationManager.startUpdatingLocation()
@@ -31,6 +38,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     @IBAction func recenter(_ sender: UIButton) {
         cameraMoveToLocation(toLocation: currentLocation)
+        
+        // Add a new document with a generated ID
+        /*
+        var ref: DocumentReference? = nil
+        ref = db.collection("users").addDocument(data: [
+            "first": "Avery",
+            "last": "Ni",
+            "born": 1995
+        ]) { err in
+            if let err = err {
+                print("Error adding document: \(err)")
+            } else {
+                print("Document added with ID: \(ref!.documentID)")
+            }
+        }*/
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
