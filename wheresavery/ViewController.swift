@@ -12,9 +12,13 @@ import GoogleMaps
 class ViewController: UIViewController, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     @IBOutlet var mapView: GMSMapView!
+    @IBOutlet weak var recenterButton: UIButton!
+    private var initialRecenterDone = false
+    private var currentLocation: CLLocationCoordinate2D?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.addSubview(recenterButton)
         
         self.view = mapView
         self.mapView?.isMyLocationEnabled = true
@@ -25,10 +29,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         self.locationManager.startUpdatingLocation()
     }
     
+    @IBAction func recenter(_ sender: UIButton) {
+        cameraMoveToLocation(toLocation: currentLocation)
+    }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let location = locationManager.location?.coordinate
-        cameraMoveToLocation(toLocation: location)
+        currentLocation = locationManager.location?.coordinate
+        if (!initialRecenterDone) {
+            cameraMoveToLocation(toLocation: currentLocation)
+            initialRecenterDone = true
+        }
     }
     
     func cameraMoveToLocation(toLocation: CLLocationCoordinate2D?) {
@@ -37,6 +47,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
 
+    
 }
 
 

@@ -18,14 +18,29 @@
                     <view key="view" contentMode="scaleToFill" id="Pfm-Vz-EXM" customClass="GMSMapView">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <button contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CcE-Kr-08m">
+                                <rect key="frame" x="272" y="588" width="72" height="38"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.51386624129053371" green="0.6705335067060314" blue="0.73613584844559588" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <state key="normal" title="Recenter">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="recenter:" destination="BYZ-38-t0r" eventType="touchUpInside" id="IQI-Xy-6Wp"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="HDr-ut-ivK"/>
                     </view>
                     <connections>
                         <outlet property="mapView" destination="Pfm-Vz-EXM" id="3KW-A1-8xF"/>
+                        <outlet property="recenterButton" destination="CcE-Kr-08m" id="rdl-z8-Okw"/>
                     </connections>
                 </viewController>
             </objects>
+            <point key="canvasLocation" x="61.600000000000001" y="36.431784107946029"/>
         </scene>
     </scenes>
 </document>

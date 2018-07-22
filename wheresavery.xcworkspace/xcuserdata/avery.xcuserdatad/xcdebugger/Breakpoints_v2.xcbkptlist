@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "wheresavery/ViewController.swift"
-            timestampString = "553877297.227459"
+            timestampString = "553928445.391783"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
-            landmarkName = "cameraMoveToLocation(toLocation:)"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "recenter(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
