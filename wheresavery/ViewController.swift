@@ -27,6 +27,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         db = Firestore.firestore()
         
         // UI
+        recenterButton.layer.masksToBounds = false
+        recenterButton.layer.cornerRadius = 25
         self.view.addSubview(recenterButton)
         self.view = mapView
         self.mapView?.isMyLocationEnabled = true
@@ -52,15 +54,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         guard let currentLoc = locations.last else { return }
         currentLocation = currentLoc
         
-        let currentTime = currentLocation!.timestamp
-        let currentTimeDifference = currentLocation!.timestamp.timeIntervalSince(lastUpdateTime!)
-        
         // Initial Recenter
         if !initialRecenterDone {
             cameraMoveToLocation(toLocation: currentLocation?.coordinate)
             initialRecenterDone = true
         }
         
+        let currentTime = currentLocation!.timestamp
+        let currentTimeDifference = currentLocation!.timestamp.timeIntervalSince(lastUpdateTime!)
         // Upload data
         if (UIApplication.shared.applicationState == .active) && (currentTimeDifference > CONSTANTS.TIME.MinimumTimeInterval)
         {
@@ -71,7 +72,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     func cameraMoveToLocation(toLocation: CLLocationCoordinate2D?) {
         if toLocation != nil {
-            self.mapView.camera = GMSCameraPosition.camera(withTarget: toLocation!, zoom: 17)
+            self.mapView.animate(to: GMSCameraPosition.camera(withTarget: toLocation!, zoom: 17))
         }
     }
     
