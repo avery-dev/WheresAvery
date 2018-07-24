@@ -16,18 +16,26 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     private var initialRecenterDone = false
     private var currentLocation: CLLocation?
     private var lastUpdateTime: Date?
+    private var dateFormatter: DateFormatter?
     private var datePicker: UIDatePicker?
     
+    
     // UI components
-    @IBOutlet var mapView: GMSMapView!
+    @IBOutlet weak var mapViewContainer: UIView!
     @IBOutlet weak var recenterButton: UIButton!
     @IBOutlet weak var timeContainer: UIView!
+    @IBOutlet weak var dateField: UITextField!
+    private var mapView: GMSMapView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Firebase initialization
         db = Firestore.firestore()
 
+        // Date Formatter initialization
+        dateFormatter = DateFormatter()
+        dateFormatter?.dateFormat = "MM/dd/yyyy"
+        
         /* PLAYGROUND */
         let start = Calendar.current.date(
             bySettingHour: 0,
@@ -52,8 +60,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         // UI
         InitializeUIComponents()
-        self.view = mapView
-        self.mapView?.isMyLocationEnabled = true
+        
         
         // Initialize time
         lastUpdateTime = Date()
@@ -69,13 +76,34 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     func InitializeUIComponents() {
+        mapView = GMSMapView(frame: self.mapViewContainer.frame)
+        mapView?.isMyLocationEnabled = true
+        self.view.addSubview(mapView)
+        
         // Recenter Button
         recenterButton.layer.masksToBounds = false
         recenterButton.layer.cornerRadius = 25
-        self.view.addSubview(recenterButton)
+        view.bringSubview(toFront: recenterButton)
         
+        // Time Container Panel
         timeContainer.layer.cornerRadius = 10
-        self.view.addSubview(timeContainer)
+        
+        // Date Picking
+        datePicker = UIDatePicker()
+        datePicker?.datePickerMode = .date
+        datePicker?.addTarget(self, action: #selector(ViewController.datePicked(datePicker:)), for: .valueChanged)
+        datePicker?.maximumDate = Date()
+        dateField.inputView = datePicker
+        dateField.text = dateFormatter?.string(from: Date())
+        //view.bringSubview(toFront: text)
+        
+        
+        view.bringSubview(toFront: timeContainer)
+    }
+    
+    @objc func datePicked(datePicker: UIDatePicker) {
+        dateField.text = dateFormatter?.string(from: datePicker.date)
+        view.endEditing(true)
     }
     
     @IBAction func recenter(_ sender: UIButton) {
