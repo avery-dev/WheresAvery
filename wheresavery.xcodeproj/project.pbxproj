@@ -15,6 +15,7 @@
 		BB1BE0A221032EA3002A96E1 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = BB1BE0A121032EA3002A96E1 /* Podfile */; };
 		BB66B932210449C7004B46FF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB66B931210449C7004B46FF /* GoogleService-Info.plist */; };
 		BB66B934210585F6004B46FF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB66B933210585F6004B46FF /* Constants.swift */; };
+		BB66B937210617E0004B46FF /* Breadcrumb.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB66B936210617E0004B46FF /* Breadcrumb.swift */; };
 		C191640804EE1CB8877AF27A /* libPods-wheresavery.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 87AF22EEC4C0B251771B065A /* libPods-wheresavery.a */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +33,7 @@
 		BB1BE0A121032EA3002A96E1 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		BB66B931210449C7004B46FF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BB66B933210585F6004B46FF /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		BB66B936210617E0004B46FF /* Breadcrumb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Breadcrumb.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				BB66B933210585F6004B46FF /* Constants.swift */,
+				BB66B936210617E0004B46FF /* Breadcrumb.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -230,6 +233,7 @@
 			files = (
 				BB1BE0922103296C002A96E1 /* ViewController.swift in Sources */,
 				BB1BE0902103296C002A96E1 /* AppDelegate.swift in Sources */,
+				BB66B937210617E0004B46FF /* Breadcrumb.swift in Sources */,
 				BB66B934210585F6004B46FF /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

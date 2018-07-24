@@ -13,16 +13,22 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="wheresavery" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Pfm-Vz-EXM" customClass="GMSMapView">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button contentMode="scaleAspectFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CcE-Kr-08m">
-                                <rect key="frame" x="302" y="558" width="50" height="50"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZBg-6k-gFx">
+                                <rect key="frame" x="15" y="507" width="345" height="132"/>
+                                <color key="backgroundColor" red="0.89893676430000002" green="0.89893676430000002" blue="0.89893676430000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            </view>
+                            <button contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CcE-Kr-08m">
+                                <rect key="frame" x="310" y="452" width="50" height="50"/>
                                 <color key="backgroundColor" red="0.89893676425508884" green="0.89893676425508884" blue="0.89893676425508884" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="0QA-G5-yQ1"/>
+                                    <constraint firstAttribute="width" constant="50" id="hX7-AF-3oF"/>
+                                </constraints>
                                 <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <inset key="contentEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
                                 <state key="normal" image="gps-recenter">
@@ -34,13 +40,24 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="ZBg-6k-gFx" firstAttribute="leading" secondItem="HDr-ut-ivK" secondAttribute="leading" constant="15" id="48D-Tg-wXU"/>
+                            <constraint firstItem="ZBg-6k-gFx" firstAttribute="centerX" secondItem="Pfm-Vz-EXM" secondAttribute="centerX" id="NLr-9m-6P1"/>
+                            <constraint firstItem="HDr-ut-ivK" firstAttribute="bottom" secondItem="ZBg-6k-gFx" secondAttribute="bottom" constant="28" id="UnR-bd-1n1"/>
+                            <constraint firstItem="HDr-ut-ivK" firstAttribute="trailing" secondItem="ZBg-6k-gFx" secondAttribute="trailing" constant="15" id="bvh-cM-L2Z"/>
+                            <constraint firstItem="HDr-ut-ivK" firstAttribute="trailing" secondItem="CcE-Kr-08m" secondAttribute="trailing" constant="15" id="ead-uH-tlZ"/>
+                            <constraint firstItem="ZBg-6k-gFx" firstAttribute="top" secondItem="CcE-Kr-08m" secondAttribute="bottom" constant="5" id="oFq-8U-9hs"/>
+                            <constraint firstItem="ZBg-6k-gFx" firstAttribute="top" secondItem="Pfm-Vz-EXM" secondAttribute="top" constant="507" id="zYz-sD-fGp"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="HDr-ut-ivK"/>
                     </view>
                     <connections>
+                        <outlet property="TimeContainer" destination="ZBg-6k-gFx" id="72k-GT-A0o"/>
                         <outlet property="mapView" destination="Pfm-Vz-EXM" id="3KW-A1-8xF"/>
                         <outlet property="recenterButton" destination="CcE-Kr-08m" id="rdl-z8-Okw"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="61.600000000000001" y="36.431784107946029"/>
         </scene>

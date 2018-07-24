@@ -20,16 +20,38 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     // UI components
     @IBOutlet var mapView: GMSMapView!
     @IBOutlet weak var recenterButton: UIButton!
+    @IBOutlet weak var timeContainer: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Firebase initialization
         db = Firestore.firestore()
         
+        
+        /* PLAYGROUND */
+        let start = Calendar.current.date(
+            bySettingHour: 0,
+            minute: 0,
+            second: 0,
+            of: Date())!
+        let end = start.addingTimeInterval(86400)
+        db.collection("Avery")
+            .whereField("timestamp", isGreaterThan: start)
+            .whereField("timestamp", isLessThan: end)
+            .getDocuments() {
+                querySnapshot, error in
+                if let error = error {
+                    print("\(error.localizedDescription )")
+                } else {
+                    for document in (querySnapshot?.documents)! {
+                        print(document.data())
+                    }
+                }
+        }
+        /* PLAYGROUND END */ 
+        
         // UI
-        recenterButton.layer.masksToBounds = false
-        recenterButton.layer.cornerRadius = 25
-        self.view.addSubview(recenterButton)
+        InitializeUIComponents()
         self.view = mapView
         self.mapView?.isMyLocationEnabled = true
         
@@ -46,6 +68,19 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.pausesLocationUpdatesAutomatically = false
     }
     
+    func InitializeUIComponents() {
+        // Recenter Button
+        recenterButton.layer.masksToBounds = false
+        recenterButton.layer.cornerRadius = 25
+        self.view.addSubview(recenterButton)
+        
+        timeContainer.layer.cornerRadius = 10
+        self.view.addSubview(timeContainer)
+        
+        //view.bringSubview(toFront: timeContainer)
+        
+    }
+    
     @IBAction func recenter(_ sender: UIButton) {
         cameraMoveToLocation(toLocation: currentLocation?.coordinate)
     }
@@ -57,6 +92,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // Initial Recenter
         if !initialRecenterDone {
             cameraMoveToLocation(toLocation: currentLocation?.coordinate)
+            uploadLocation(location: currentLoc)
             initialRecenterDone = true
         }
         
@@ -77,18 +113,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     func uploadLocation(location: CLLocation) {
-//        print("Uploading Location: %@", currentLocation!)
-//        print("Time: %@", location.timestamp.description)
-//        let df = DateFormatter()
-//        df.dateFormat = "yyyy-MM-dd HH:mm:ss +zzzz"
-//        let date = df.date(from: location.timestamp.description)
-//        print("Time: %@", date!.description)
-//        df.timeZone = TimeZone.current
-//        print("Local Time: %@", df.string(from: date!))
-        
         db.collection(CONSTANTS.DATA.User).document(location.timestamp.description).setData([
             CONSTANTS.DATA.Latitude: location.coordinate.latitude,
-            CONSTANTS.DATA.Longitude: location.coordinate.longitude
+            CONSTANTS.DATA.Longitude: location.coordinate.longitude,
+            CONSTANTS.DATA.Timestamp: location.timestamp
         ]) { err in
             if let err = err {
                 print("Error adding document: \(err)")
