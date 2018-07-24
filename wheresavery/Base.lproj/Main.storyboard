@@ -52,9 +52,9 @@
                         <viewLayoutGuide key="safeArea" id="HDr-ut-ivK"/>
                     </view>
                     <connections>
-                        <outlet property="TimeContainer" destination="ZBg-6k-gFx" id="72k-GT-A0o"/>
                         <outlet property="mapView" destination="Pfm-Vz-EXM" id="3KW-A1-8xF"/>
                         <outlet property="recenterButton" destination="CcE-Kr-08m" id="rdl-z8-Okw"/>
+                        <outlet property="timeContainer" destination="ZBg-6k-gFx" id="hyH-ka-MCk"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

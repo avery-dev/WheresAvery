@@ -16,6 +16,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     private var initialRecenterDone = false
     private var currentLocation: CLLocation?
     private var lastUpdateTime: Date?
+    private var datePicker: UIDatePicker?
     
     // UI components
     @IBOutlet var mapView: GMSMapView!
@@ -26,8 +27,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         super.viewDidLoad()
         // Firebase initialization
         db = Firestore.firestore()
-        
-        
+
         /* PLAYGROUND */
         let start = Calendar.current.date(
             bySettingHour: 0,
@@ -76,9 +76,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         timeContainer.layer.cornerRadius = 10
         self.view.addSubview(timeContainer)
-        
-        //view.bringSubview(toFront: timeContainer)
-        
     }
     
     @IBAction func recenter(_ sender: UIButton) {
