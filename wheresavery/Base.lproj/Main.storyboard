@@ -33,13 +33,25 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="rLV-l5-F3a">
+                                        <rect key="frame" x="13" y="93" width="319" height="31"/>
+                                        <color key="minimumTrackTintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="maximumTrackTintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <connections>
+                                            <action selector="timeSliderValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="9rq-p8-mbh"/>
+                                        </connections>
+                                    </slider>
                                 </subviews>
                                 <color key="backgroundColor" red="0.89893676430000002" green="0.89893676430000002" blue="0.89893676430000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
                                     <constraint firstItem="jhO-HE-9up" firstAttribute="leading" secondItem="ZBg-6k-gFx" secondAttribute="leading" constant="124" id="AJr-4v-Oje"/>
+                                    <constraint firstAttribute="trailing" secondItem="rLV-l5-F3a" secondAttribute="trailing" constant="15" id="BD7-en-nmj"/>
+                                    <constraint firstItem="rLV-l5-F3a" firstAttribute="centerX" secondItem="ZBg-6k-gFx" secondAttribute="centerX" id="V8Z-ZW-BwG"/>
                                     <constraint firstAttribute="trailing" secondItem="jhO-HE-9up" secondAttribute="trailing" constant="124" id="aOa-iA-1s2"/>
                                     <constraint firstItem="jhO-HE-9up" firstAttribute="centerX" secondItem="ZBg-6k-gFx" secondAttribute="centerX" id="hzw-Ah-hZb"/>
                                     <constraint firstItem="jhO-HE-9up" firstAttribute="top" secondItem="ZBg-6k-gFx" secondAttribute="top" constant="5" id="l6K-VF-pe7"/>
+                                    <constraint firstItem="rLV-l5-F3a" firstAttribute="leading" secondItem="ZBg-6k-gFx" secondAttribute="leading" constant="15" id="pJG-nL-A9P"/>
+                                    <constraint firstAttribute="bottom" secondItem="rLV-l5-F3a" secondAttribute="bottom" constant="9" id="sTb-uF-AfM"/>
                                 </constraints>
                             </view>
                             <button contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CcE-Kr-08m">
@@ -76,6 +88,7 @@
                         <outlet property="mapViewContainer" destination="ws6-vo-te4" id="VkZ-GU-C82"/>
                         <outlet property="recenterButton" destination="CcE-Kr-08m" id="rdl-z8-Okw"/>
                         <outlet property="timeContainer" destination="ZBg-6k-gFx" id="hyH-ka-MCk"/>
+                        <outlet property="timeSlider" destination="rLV-l5-F3a" id="z0w-Up-U3t"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

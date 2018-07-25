@@ -12,22 +12,34 @@ import Firebase
 class BreadcrumbManager {
     private var db: Firestore!
     private var breadcrumbTrail: [String:[String:Breadcrumb]]
+    private var dateFormatter: DateFormatter?
+    private var timeFormatter: DateFormatter?
     
     init() {
         db = Firestore.firestore()
         breadcrumbTrail = [String:[String:Breadcrumb]]()
+        
+        // Date-Time Formatter initialization
+        dateFormatter = DateFormatter()
+        dateFormatter?.dateFormat = "MM/dd/yyyy"
+        timeFormatter = DateFormatter()
+        timeFormatter?.dateFormat = "HH:mm"
+        timeFormatter?.timeZone = TimeZone.current
     }
     
-    func retrieveBreadcrumbsFromDate(date: Date, dateId: String, completion: @escaping () -> Void) {
+    func retrieveBreadcrumbsFromDate(date: Date, completion: @escaping () -> Void) {
+        let dateId = dateFormatter?.string(from: date)
         let start = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: date)!
         let end = start.addingTimeInterval(86400)
         
-        // Add cache checks
-        // - current day case
-        // - already pulled case
-        // NOTE - Do I need to add completion?
-        
-        db.collection(CONSTANTS.DATA.User)
+        // If data is already cached/retrieved
+        if breadcrumbTrail[dateId!] != nil {
+            //Do nothing and finish (use cached values)
+            completion()
+        }
+        // Else pull data
+        else {
+            db.collection(CONSTANTS.DATA.User)
             .whereField(CONSTANTS.DATA.Timestamp, isGreaterThan: start)
             .whereField(CONSTANTS.DATA.Timestamp, isLessThan: end)
             .getDocuments() {
@@ -36,14 +48,16 @@ class BreadcrumbManager {
                     print("\(error.localizedDescription )")
                     completion()
                 } else {
-                    var breadcrumbsDayTrail = [String:Breadcrumb]()
+                    self.breadcrumbTrail[dateId!] = [String:Breadcrumb]()
                     for document in (querySnapshot?.documents)! {
-                        breadcrumbsDayTrail[document.documentID] = Breadcrumb(dictionary: document.data())
+                        let breadcrumb = Breadcrumb(dictionary: document.data())
+                        let timeId = (self.timeFormatter?.string(from: (breadcrumb?.timestamp)!))!
+                        self.breadcrumbTrail[dateId!]![timeId] = breadcrumb
                     }
-                    self.breadcrumbTrail[dateId] = breadcrumbsDayTrail
                     completion()
                 }
-        }
+            }
+         }
     }
     
     func getBreadcrumbsFromDateId(dateId: String)->[String:Breadcrumb] {
@@ -51,15 +65,17 @@ class BreadcrumbManager {
     }
     
     func uploadBreadcrumb(breadcrumb: Breadcrumb) {
+        let dateId = (dateFormatter?.string(from: breadcrumb.timestamp))!
+        let timeId = (timeFormatter?.string(from: breadcrumb.timestamp))!
+        breadcrumbTrail[dateId]![timeId] = breadcrumb
         db.collection(CONSTANTS.DATA.User).document(breadcrumb.timestamp.description)
             .setData(breadcrumb.dictionary) { err in
             if let err = err {
                 print("Error adding document: \(err)")
             } else {
-                print("Document successfully written")
+                print("Successfully uploaded breadcrumb at ", breadcrumb.timestamp.description)
             }
         }
-        
     }
     
     

@@ -13,11 +13,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     private var initialRecenterDone = false
     private var currentLocation: CLLocation?
-    private var lastUpdateTime: Date?
+    private var lastUpdateTime: Date? // Last UI Map Upload Time
     private var dateFormatter: DateFormatter?
     private var timeFormatter: DateFormatter?
     private var datePicker: UIDatePicker?
     private var breadcrumbManager: BreadcrumbManager?
+    private var breadcrumbKeys: [String]?
     
     
     // UI components
@@ -25,6 +26,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var recenterButton: UIButton!
     @IBOutlet weak var timeContainer: UIView!
     @IBOutlet weak var dateField: UITextField!
+    @IBOutlet weak var timeSlider: UISlider!
     var toolbar:UIToolbar?
     
     private var mapView: GMSMapView!
@@ -33,8 +35,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         super.viewDidLoad()
         // Firebase initialization
         breadcrumbManager = BreadcrumbManager()
+        breadcrumbManager?.retrieveBreadcrumbsFromDate(date: Date()) {
+            self.locationManager.startUpdatingLocation()
+        }
         
-        // Date Formatter initialization
+        // Date-Time Formatter initialization
         dateFormatter = DateFormatter()
         dateFormatter?.dateFormat = "MM/dd/yyyy"
         timeFormatter = DateFormatter()
@@ -49,11 +54,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // Location Manager code to fetch current location
         self.locationManager.delegate = self
         self.locationManager.requestWhenInUseAuthorization()
-        self.locationManager.startUpdatingLocation()
 
         // Location Manager background code
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.pausesLocationUpdatesAutomatically = false
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -77,9 +82,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
-    func cameraMoveToLocation(toLocation: CLLocationCoordinate2D?, zoom: Float = 17) {
+    func cameraMoveToLocation(toLocation: CLLocationCoordinate2D?, zoom: Float = 17, animate: Bool = true) {
         if toLocation != nil {
-            self.mapView.animate(to: GMSCameraPosition.camera(withTarget: toLocation!, zoom: zoom))
+            if animate {
+                self.mapView.animate(to: GMSCameraPosition.camera(withTarget: toLocation!, zoom: zoom))
+            } else {
+                self.mapView.camera = GMSCameraPosition.camera(withTarget: toLocation!, zoom: 17)
+            }
         }
     }
     
@@ -133,10 +142,24 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         view.bringSubview(toFront: timeContainer)
     }
     
+    func regenerateSlider(dateId: String) {
+        breadcrumbKeys = breadcrumbManager?.getBreadcrumbsFromDateId(dateId: dateId).keys.sorted()
+        timeSlider.maximumValue = Float((breadcrumbKeys?.count)! - 1)
+    }
+    
+    @IBAction func timeSliderValueChanged(_ sender: UISlider) {
+        timeSlider.value = roundf(sender.value)
+        let breadcrumbKeysIndex = Int(timeSlider.value)
+        let dateId = dateField.text
+        let breadcrumb = breadcrumbManager?.getBreadcrumbsFromDateId(dateId: dateId!)[breadcrumbKeys![breadcrumbKeysIndex]]
+        let toLocation = CLLocationCoordinate2D(latitude: (breadcrumb?.latitude)!, longitude: (breadcrumb?.longitude)!)
+        cameraMoveToLocation(toLocation: toLocation, animate: false)
+    }
+    
     @objc func datePicked() {
         let dateId = dateFormatter?.string(from: datePicker!.date)
         dateField.text = dateId
-        breadcrumbManager?.retrieveBreadcrumbsFromDate(date: datePicker!.date, dateId: dateId!) {
+        breadcrumbManager?.retrieveBreadcrumbsFromDate(date: datePicker!.date) {
             let breadcrumbs = self.breadcrumbManager?.getBreadcrumbsFromDateId(dateId: dateId!)
             if (breadcrumbs == nil) {
                 // This should never happen unless internet shits out?
@@ -152,13 +175,15 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     averageLong += breadcrumb.longitude
                     
                     let marker = GMSMarker(position: position)
-                    marker.title = self.timeFormatter?.string(from: breadcrumb.timestamp)
+                    marker.title = data.key
                     marker.map = self.mapView
                 }
                 averageLat /= Double((breadcrumbs?.count)!)
                 averageLong /= Double((breadcrumbs?.count)!)
                 let camera = CLLocationCoordinate2D(latitude: averageLat, longitude: averageLong)
                 self.cameraMoveToLocation(toLocation: camera, zoom: 15)
+                
+                self.regenerateSlider(dateId: dateId!)
                 
             }
         }
