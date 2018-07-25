@@ -25,6 +25,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var recenterButton: UIButton!
     @IBOutlet weak var timeContainer: UIView!
     @IBOutlet weak var dateField: UITextField!
+    var toolbar:UIToolbar?
+    
     private var mapView: GMSMapView!
     
     override func viewDidLoad() {
@@ -36,7 +38,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         dateFormatter = DateFormatter()
         dateFormatter?.dateFormat = "MM/dd/yyyy"
         
-        /* PLAYGROUND */
+        /* PLAYGROUND
         let start = Calendar.current.date(
             bySettingHour: 0,
             minute: 0,
@@ -56,11 +58,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     }
                 }
         }
-        /* PLAYGROUND END */ 
+        PLAYGROUND END */
         
         // UI
         InitializeUIComponents()
-        
         
         // Initialize time
         lastUpdateTime = Date()
@@ -91,18 +92,37 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // Date Picking
         datePicker = UIDatePicker()
         datePicker?.datePickerMode = .date
-        datePicker?.addTarget(self, action: #selector(ViewController.datePicked(datePicker:)), for: .valueChanged)
         datePicker?.maximumDate = Date()
+        let toolBar = UIToolbar()
+        toolBar.barStyle = .default
+        toolBar.isTranslucent = true
+        
+        let cancelButton = UIBarButtonItem(title: "Cancel",
+                                           style: UIBarButtonItemStyle.plain,
+                                           target: self,
+                                           action: #selector(ViewController.dateCancelled))
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(title: "Done",
+                                         style: UIBarButtonItemStyle.plain,
+                                         target: self,
+                                         action: #selector(ViewController.datePicked))
+        toolBar.setItems([cancelButton, space, doneButton], animated: false)
+        toolBar.isUserInteractionEnabled = true
+        toolBar.sizeToFit()
+        
+        dateField.inputAccessoryView = toolBar
         dateField.inputView = datePicker
         dateField.text = dateFormatter?.string(from: Date())
-        //view.bringSubview(toFront: text)
-        
         
         view.bringSubview(toFront: timeContainer)
     }
     
-    @objc func datePicked(datePicker: UIDatePicker) {
-        dateField.text = dateFormatter?.string(from: datePicker.date)
+    @objc func datePicked() {
+        dateField.text = dateFormatter?.string(from: datePicker!.date)
+        view.endEditing(true)
+    }
+    
+    @objc func dateCancelled() {
         view.endEditing(true)
     }
     
@@ -126,7 +146,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // Upload data
         if (UIApplication.shared.applicationState == .active) && (currentTimeDifference > CONSTANTS.TIME.MinimumTimeInterval)
         {
-            uploadLocation(location: currentLoc)
+            //uploadLocation(location: currentLoc)
             lastUpdateTime = currentTime
         }
     }
