@@ -8,16 +8,16 @@
 
 import UIKit
 import GoogleMaps
-import Firebase
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
-    private var db: Firestore!
     private var initialRecenterDone = false
     private var currentLocation: CLLocation?
     private var lastUpdateTime: Date?
     private var dateFormatter: DateFormatter?
+    private var timeFormatter: DateFormatter?
     private var datePicker: UIDatePicker?
+    private var breadcrumbManager: BreadcrumbManager?
     
     
     // UI components
@@ -32,33 +32,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Firebase initialization
-        db = Firestore.firestore()
-
+        breadcrumbManager = BreadcrumbManager()
+        
         // Date Formatter initialization
         dateFormatter = DateFormatter()
         dateFormatter?.dateFormat = "MM/dd/yyyy"
-        
-        /* PLAYGROUND
-        let start = Calendar.current.date(
-            bySettingHour: 0,
-            minute: 0,
-            second: 0,
-            of: Date())!
-        let end = start.addingTimeInterval(86400)
-        db.collection("Avery")
-            .whereField("timestamp", isGreaterThan: start)
-            .whereField("timestamp", isLessThan: end)
-            .getDocuments() {
-                querySnapshot, error in
-                if let error = error {
-                    print("\(error.localizedDescription )")
-                } else {
-                    for document in (querySnapshot?.documents)! {
-                        print(document.data())
-                    }
-                }
-        }
-        PLAYGROUND END */
+        timeFormatter = DateFormatter()
+        timeFormatter?.dateFormat = "hh:mm"
         
         // UI
         InitializeUIComponents()
@@ -76,6 +56,42 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.pausesLocationUpdatesAutomatically = false
     }
     
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let currentLoc = locations.last else { return }
+        currentLocation = currentLoc
+        
+        // Initial Recenter
+        if !initialRecenterDone {
+            cameraMoveToLocation(toLocation: currentLocation?.coordinate)
+            uploadLocation(location: currentLoc)
+            initialRecenterDone = true
+        }
+        
+        let currentTime = currentLocation!.timestamp
+        let currentTimeDifference = currentLocation!.timestamp.timeIntervalSince(lastUpdateTime!)
+        // Upload data
+        if (UIApplication.shared.applicationState == .active) && (currentTimeDifference > CONSTANTS.TIME.MinimumTimeInterval)
+        {
+            //uploadLocation(location: currentLoc)
+            lastUpdateTime = currentTime
+        }
+    }
+    
+    func cameraMoveToLocation(toLocation: CLLocationCoordinate2D?, zoom: Float = 17) {
+        if toLocation != nil {
+            self.mapView.animate(to: GMSCameraPosition.camera(withTarget: toLocation!, zoom: zoom))
+        }
+    }
+    
+    func uploadLocation(location: CLLocation) {
+        breadcrumbManager?.uploadBreadcrumb(breadcrumb: Breadcrumb(dictionary: [
+            CONSTANTS.DATA.Latitude: location.coordinate.latitude,
+            CONSTANTS.DATA.Longitude: location.coordinate.longitude,
+            CONSTANTS.DATA.Timestamp: location.timestamp
+        ])!)
+    }
+    
+    // UI CODE
     func InitializeUIComponents() {
         mapView = GMSMapView(frame: self.mapViewContainer.frame)
         mapView?.isMyLocationEnabled = true
@@ -118,7 +134,34 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     @objc func datePicked() {
-        dateField.text = dateFormatter?.string(from: datePicker!.date)
+        let dateId = dateFormatter?.string(from: datePicker!.date)
+        dateField.text = dateId
+        breadcrumbManager?.retrieveBreadcrumbsFromDate(date: datePicker!.date, dateId: dateId!) {
+            let breadcrumbs = self.breadcrumbManager?.getBreadcrumbsFromDateId(dateId: dateId!)
+            if (breadcrumbs == nil) {
+                // This should never happen unless internet shits out?
+            } else {
+                self.mapView.clear()
+                var averageLat = 0.0
+                var averageLong = 0.0
+                // Drop a pin everywhere I was
+                for data in (breadcrumbs)! {
+                    let breadcrumb = data.value
+                    let position = CLLocationCoordinate2D(latitude: breadcrumb.latitude, longitude: breadcrumb.longitude)
+                    averageLat += breadcrumb.latitude
+                    averageLong += breadcrumb.longitude
+                    
+                    let marker = GMSMarker(position: position)
+                    marker.title = self.timeFormatter?.string(from: breadcrumb.timestamp)
+                    marker.map = self.mapView
+                }
+                averageLat /= Double((breadcrumbs?.count)!)
+                averageLong /= Double((breadcrumbs?.count)!)
+                let camera = CLLocationCoordinate2D(latitude: averageLat, longitude: averageLong)
+                self.cameraMoveToLocation(toLocation: camera, zoom: 15)
+                
+            }
+        }
         view.endEditing(true)
     }
     
@@ -129,48 +172,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBAction func recenter(_ sender: UIButton) {
         cameraMoveToLocation(toLocation: currentLocation?.coordinate)
     }
-
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let currentLoc = locations.last else { return }
-        currentLocation = currentLoc
-        
-        // Initial Recenter
-        if !initialRecenterDone {
-            cameraMoveToLocation(toLocation: currentLocation?.coordinate)
-            uploadLocation(location: currentLoc)
-            initialRecenterDone = true
-        }
-        
-        let currentTime = currentLocation!.timestamp
-        let currentTimeDifference = currentLocation!.timestamp.timeIntervalSince(lastUpdateTime!)
-        // Upload data
-        if (UIApplication.shared.applicationState == .active) && (currentTimeDifference > CONSTANTS.TIME.MinimumTimeInterval)
-        {
-            //uploadLocation(location: currentLoc)
-            lastUpdateTime = currentTime
-        }
-    }
-    
-    func cameraMoveToLocation(toLocation: CLLocationCoordinate2D?) {
-        if toLocation != nil {
-            self.mapView.animate(to: GMSCameraPosition.camera(withTarget: toLocation!, zoom: 17))
-        }
-    }
-    
-    func uploadLocation(location: CLLocation) {
-        db.collection(CONSTANTS.DATA.User).document(location.timestamp.description).setData([
-            CONSTANTS.DATA.Latitude: location.coordinate.latitude,
-            CONSTANTS.DATA.Longitude: location.coordinate.longitude,
-            CONSTANTS.DATA.Timestamp: location.timestamp
-        ]) { err in
-            if let err = err {
-                print("Error adding document: \(err)")
-            } else {
-                print("Document successfully written")
-            }
-        }
-    }
-
+    // END UI CODE
     
 }
 
