@@ -186,7 +186,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let breadcrumbKeysIndex = Int(timeSlider.value)
         let markerKey = breadcrumbKeys![breadcrumbKeysIndex]
         let currentMarker = currentMarkers?[markerKey]
-        print(currentMarker)
         self.mapView.selectedMarker = currentMarker
         cameraMoveToLocation(toLocation: currentMarker?.position, animate: false)
         

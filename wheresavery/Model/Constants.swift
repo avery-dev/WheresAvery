@@ -21,13 +21,12 @@ struct CONSTANTS {
     }
     
     struct DISTANCE {
-        static let MinimumDistanceFilter = 15.0
+        static let MinimumDistanceFilter = 40.0
     }
     
     struct TIME {
         static let HourFormat = "HH:mm:ss"
         static let DateFormat = "MM/dd/yyyy"
-        static let MinimumTimeInterval = 60.0
         static let DateSelectionStartDate = "07/26/2018"
     }
 }
