@@ -18,9 +18,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     private var dateFormatter = DateFormatter()
     private var timeFormatter = DateFormatter()
     private var datePicker: UIDatePicker?
-    private var breadcrumbManager: BreadcrumbManager?
     private var breadcrumbKeys: [String]?
     private var currentMarkers: [String:GMSMarker]?
+    public var breadcrumbManager: BreadcrumbManager?
     
     // UI components
     @IBOutlet weak var mapViewContainer: UIView!
@@ -37,6 +37,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // Firebase initialization
         self.timeSlider.isEnabled = false
         breadcrumbManager = BreadcrumbManager()
+        ReachabilityManager.shared.breadcrumbManager = breadcrumbManager
         breadcrumbManager?.retrieveBreadcrumbsFromDate(date: Date()) {
             self.locationManager.distanceFilter = CONSTANTS.DISTANCE.MinimumDistanceFilter
             self.locationManager.startUpdatingLocation()
@@ -77,7 +78,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         
         // Upload data
-        uploadLocation(location: currentLoc)
+        addLocation(location: currentLoc)
         regenerateSlider(dateId: (dateFormatter.string(from: currentLoc.timestamp)))
     }
     
@@ -91,20 +92,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
-    func uploadLocation(location: CLLocation) {
-        breadcrumbManager?.uploadBreadcrumb(breadcrumb: Breadcrumb(dictionary: [
+    func addLocation(location: CLLocation) {
+        breadcrumbManager?.addBreadcrumb(breadcrumb: Breadcrumb(dictionary: [
             CONSTANTS.DATA.Latitude: location.coordinate.latitude,
             CONSTANTS.DATA.Longitude: location.coordinate.longitude,
             CONSTANTS.DATA.Timestamp: location.timestamp
-        ])!) {
-            // If it is today, update the map
-            if Calendar.current.isDateInToday(Date()) {
-                let dateId = (self.dateFormatter.string(from: location.timestamp))
-                let timeId = (self.timeFormatter.string(from: location.timestamp))
-                self.addMarker(markerPosition: location.coordinate, title: timeId)
-                self.regenerateSlider(dateId: dateId)
-            }
+        ])!)
+        // If it is today, update the map
+        if Calendar.current.isDateInToday(Date()) {
+            let dateId = (self.dateFormatter.string(from: location.timestamp))
+            let timeId = (self.timeFormatter.string(from: location.timestamp))
+            self.addMarker(markerPosition: location.coordinate, title: timeId)
+            self.regenerateSlider(dateId: dateId)
         }
+    }
+    
+    func uploadBreadcrumbs() {
+        breadcrumbManager?.uploadBreadcrumbs()
     }
     
     func addMarker(markerPosition: CLLocationCoordinate2D, title: String) {

@@ -13,6 +13,8 @@
 		BB1BE0972103296D002A96E1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB1BE0962103296D002A96E1 /* Assets.xcassets */; };
 		BB1BE09A2103296D002A96E1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB1BE0982103296D002A96E1 /* LaunchScreen.storyboard */; };
 		BB1BE0A221032EA3002A96E1 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = BB1BE0A121032EA3002A96E1 /* Podfile */; };
+		BB2446B3210AEF5E006D7A8E /* ReachabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2446B2210AEF5E006D7A8E /* ReachabilityManager.swift */; };
+		BB2BB99321086E2700F56961 /* BreadcrumbManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2BB99221086E2700F56961 /* BreadcrumbManager.swift */; };
 		BB66B932210449C7004B46FF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB66B931210449C7004B46FF /* GoogleService-Info.plist */; };
 		BB66B934210585F6004B46FF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB66B933210585F6004B46FF /* Constants.swift */; };
 		BB66B937210617E0004B46FF /* Breadcrumb.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB66B936210617E0004B46FF /* Breadcrumb.swift */; };
@@ -31,6 +33,8 @@
 		BB1BE0992103296D002A96E1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BB1BE09B2103296D002A96E1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB1BE0A121032EA3002A96E1 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		BB2446B2210AEF5E006D7A8E /* ReachabilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachabilityManager.swift; sourceTree = "<group>"; };
+		BB2BB99221086E2700F56961 /* BreadcrumbManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreadcrumbManager.swift; sourceTree = "<group>"; };
 		BB66B931210449C7004B46FF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BB66B933210585F6004B46FF /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		BB66B936210617E0004B46FF /* Breadcrumb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Breadcrumb.swift; sourceTree = "<group>"; };
@@ -96,6 +100,8 @@
 			children = (
 				BB66B933210585F6004B46FF /* Constants.swift */,
 				BB66B936210617E0004B46FF /* Breadcrumb.swift */,
+				BB2BB99221086E2700F56961 /* BreadcrumbManager.swift */,
+				BB2446B2210AEF5E006D7A8E /* ReachabilityManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -235,6 +241,8 @@
 				BB1BE0902103296C002A96E1 /* AppDelegate.swift in Sources */,
 				BB66B937210617E0004B46FF /* Breadcrumb.swift in Sources */,
 				BB66B934210585F6004B46FF /* Constants.swift in Sources */,
+				BB2446B3210AEF5E006D7A8E /* ReachabilityManager.swift in Sources */,
+				BB2BB99321086E2700F56961 /* BreadcrumbManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -380,6 +388,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LB43ZTZ68R;
 				INFOPLIST_FILE = wheresavery/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -398,6 +407,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LB43ZTZ68R;
 				INFOPLIST_FILE = wheresavery/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

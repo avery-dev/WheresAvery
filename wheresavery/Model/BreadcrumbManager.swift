@@ -14,6 +14,7 @@ class BreadcrumbManager {
     private var breadcrumbTrail: [String:[String:Breadcrumb]]
     private var dateFormatter: DateFormatter?
     private var timeFormatter: DateFormatter?
+    private var breadcrumbsToBeUploaded = [Breadcrumb]()
     
     init() {
         db = Firestore.firestore()
@@ -64,20 +65,28 @@ class BreadcrumbManager {
         return self.breadcrumbTrail[dateId]!
     }
     
-    func uploadBreadcrumb(breadcrumb: Breadcrumb, completion: @escaping () -> Void) {
+    func addBreadcrumb(breadcrumb: Breadcrumb) {
         let dateId = (dateFormatter?.string(from: breadcrumb.timestamp))!
         let timeId = (timeFormatter?.string(from: breadcrumb.timestamp))!
         breadcrumbTrail[dateId]![timeId] = breadcrumb
-        db.collection(CONSTANTS.DATA.User).document(breadcrumb.timestamp.description)
-            .setData(breadcrumb.dictionary) { err in
-            if let err = err {
-                print("Error adding document: \(err)")
-                completion()
-            } else {
-                print("Successfully uploaded breadcrumb at ", breadcrumb.timestamp.description)
-                completion()
+        breadcrumbsToBeUploaded.append(breadcrumb)
+        if ReachabilityManager.shared.reachability.currentReachabilityStatus == .reachableViaWiFi {
+            uploadBreadcrumbs()
+        }
+    }
+    
+    func uploadBreadcrumbs() {
+        for breadcrumb in breadcrumbsToBeUploaded {
+            db.collection(CONSTANTS.DATA.User).document(breadcrumb.timestamp.description)
+                .setData(breadcrumb.dictionary) { err in
+                    if let err = err {
+                        print("Error adding document: \(err)")
+                    } else {
+                        print("Successfully uploaded breadcrumb at ", breadcrumb.timestamp.description)
+                    }
             }
         }
+        breadcrumbsToBeUploaded.removeAll()
     }
     
     

@@ -1,0 +1,6 @@
+module Pods_wheresavery {
+  umbrella header "Pods-wheresavery-umbrella.h"
+
+  export *
+  module * { export * }
+}
