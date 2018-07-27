@@ -21,9 +21,9 @@ class BreadcrumbManager {
         
         // Date-Time Formatter initialization
         dateFormatter = DateFormatter()
-        dateFormatter?.dateFormat = "MM/dd/yyyy"
+        dateFormatter?.dateFormat = CONSTANTS.TIME.DateFormat
         timeFormatter = DateFormatter()
-        timeFormatter?.dateFormat = "HH:mm"
+        timeFormatter?.dateFormat = CONSTANTS.TIME.HourFormat
         timeFormatter?.timeZone = TimeZone.current
     }
     
@@ -64,7 +64,7 @@ class BreadcrumbManager {
         return self.breadcrumbTrail[dateId]!
     }
     
-    func uploadBreadcrumb(breadcrumb: Breadcrumb) {
+    func uploadBreadcrumb(breadcrumb: Breadcrumb, completion: @escaping () -> Void) {
         let dateId = (dateFormatter?.string(from: breadcrumb.timestamp))!
         let timeId = (timeFormatter?.string(from: breadcrumb.timestamp))!
         breadcrumbTrail[dateId]![timeId] = breadcrumb
@@ -72,8 +72,10 @@ class BreadcrumbManager {
             .setData(breadcrumb.dictionary) { err in
             if let err = err {
                 print("Error adding document: \(err)")
+                completion()
             } else {
                 print("Successfully uploaded breadcrumb at ", breadcrumb.timestamp.description)
+                completion()
             }
         }
     }

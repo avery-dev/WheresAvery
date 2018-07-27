@@ -19,7 +19,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     private var datePicker: UIDatePicker?
     private var breadcrumbManager: BreadcrumbManager?
     private var breadcrumbKeys: [String]?
-    
+    private var currentMarkers: [String:GMSMarker]?
     
     // UI components
     @IBOutlet weak var mapViewContainer: UIView!
@@ -35,15 +35,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         super.viewDidLoad()
         // Firebase initialization
         breadcrumbManager = BreadcrumbManager()
+        self.timeSlider.isEnabled = false
         breadcrumbManager?.retrieveBreadcrumbsFromDate(date: Date()) {
+            self.locationManager.distanceFilter = CONSTANTS.DISTANCE.MinimumDistanceFilter
             self.locationManager.startUpdatingLocation()
+            self.updateMapUIWithDate(date: Date(), focusOnMarker: false)
         }
         
         // Date-Time Formatter initialization
         dateFormatter = DateFormatter()
-        dateFormatter?.dateFormat = "MM/dd/yyyy"
+        dateFormatter?.dateFormat = CONSTANTS.TIME.DateFormat
         timeFormatter = DateFormatter()
-        timeFormatter?.dateFormat = "hh:mm"
+        timeFormatter?.dateFormat = CONSTANTS.TIME.HourFormat
         
         // UI
         InitializeUIComponents()
@@ -59,6 +62,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.pausesLocationUpdatesAutomatically = false
         
+        // Markers
+        currentMarkers = [String:GMSMarker]()
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -68,18 +74,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // Initial Recenter
         if !initialRecenterDone {
             cameraMoveToLocation(toLocation: currentLocation?.coordinate)
-            uploadLocation(location: currentLoc)
             initialRecenterDone = true
         }
         
-        let currentTime = currentLocation!.timestamp
-        let currentTimeDifference = currentLocation!.timestamp.timeIntervalSince(lastUpdateTime!)
         // Upload data
-        if (UIApplication.shared.applicationState == .active) && (currentTimeDifference > CONSTANTS.TIME.MinimumTimeInterval)
-        {
-            //uploadLocation(location: currentLoc)
-            lastUpdateTime = currentTime
-        }
+        uploadLocation(location: currentLoc)
+        regenerateSlider(dateId: (dateFormatter?.string(from: currentLoc.timestamp))!)
     }
     
     func cameraMoveToLocation(toLocation: CLLocationCoordinate2D?, zoom: Float = 17, animate: Bool = true) {
@@ -97,7 +97,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             CONSTANTS.DATA.Latitude: location.coordinate.latitude,
             CONSTANTS.DATA.Longitude: location.coordinate.longitude,
             CONSTANTS.DATA.Timestamp: location.timestamp
-        ])!)
+        ])!) {
+            // If it is today, update the map
+            if Calendar.current.isDateInToday(Date()) {
+                let dateId = (self.dateFormatter?.string(from: location.timestamp))!
+                let timeId = (self.timeFormatter?.string(from: location.timestamp))!
+                self.addMarker(markerPosition: location.coordinate, title: timeId)
+                self.regenerateSlider(dateId: dateId)
+            }
+        }
+    }
+    
+    func addMarker(markerPosition: CLLocationCoordinate2D, title: String) {
+        let marker = GMSMarker(position: markerPosition)
+        marker.title = title
+        marker.map = self.mapView
+        self.currentMarkers![title] = marker
     }
     
     // UI CODE
@@ -118,6 +133,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         datePicker = UIDatePicker()
         datePicker?.datePickerMode = .date
         datePicker?.maximumDate = Date()
+        datePicker?.minimumDate = dateFormatter?.date(from: CONSTANTS.TIME.DateSelectionStartDate)
         let toolBar = UIToolbar()
         toolBar.barStyle = .default
         toolBar.isTranslucent = true
@@ -144,50 +160,67 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     func regenerateSlider(dateId: String) {
         breadcrumbKeys = breadcrumbManager?.getBreadcrumbsFromDateId(dateId: dateId).keys.sorted()
+
+        if (breadcrumbKeys?.count)! < 2 {
+            if (breadcrumbKeys?.isEmpty)! {
+                let alert = UIAlertController(title: "Oops!", message: "There are no breadcrumbs for this day", preferredStyle: UIAlertControllerStyle.alert)
+                alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+            timeSlider.isEnabled = false
+            return
+        }
+        timeSlider.isEnabled = true
         timeSlider.maximumValue = Float((breadcrumbKeys?.count)! - 1)
     }
     
+    func initializeSliderValueAndMoveCamera(breadcrumbKeyIndex: Int = 0) {
+        timeSlider.value = Float(breadcrumbKeyIndex)
+        cameraMoveToLocation(toLocation: currentMarkers?[breadcrumbKeys![breadcrumbKeyIndex]]?.position, animate: false)
+        self.mapView.selectedMarker = currentMarkers?[breadcrumbKeys![breadcrumbKeyIndex]]
+    }
+    
     @IBAction func timeSliderValueChanged(_ sender: UISlider) {
+        // Get marker and move camera
         timeSlider.value = roundf(sender.value)
         let breadcrumbKeysIndex = Int(timeSlider.value)
-        let dateId = dateField.text
-        let breadcrumb = breadcrumbManager?.getBreadcrumbsFromDateId(dateId: dateId!)[breadcrumbKeys![breadcrumbKeysIndex]]
-        let toLocation = CLLocationCoordinate2D(latitude: (breadcrumb?.latitude)!, longitude: (breadcrumb?.longitude)!)
-        cameraMoveToLocation(toLocation: toLocation, animate: false)
+        let markerKey = breadcrumbKeys![breadcrumbKeysIndex]
+        let currentMarker = currentMarkers?[markerKey]
+        print(currentMarker)
+        self.mapView.selectedMarker = currentMarker
+        cameraMoveToLocation(toLocation: currentMarker?.position, animate: false)
+        
     }
     
     @objc func datePicked() {
         let dateId = dateFormatter?.string(from: datePicker!.date)
         dateField.text = dateId
-        breadcrumbManager?.retrieveBreadcrumbsFromDate(date: datePicker!.date) {
+        updateMapUIWithDate(date: datePicker!.date)
+        view.endEditing(true)
+    }
+    
+    func updateMapUIWithDate(date: Date, focusOnMarker: Bool = true) {
+        let dateId = dateFormatter?.string(from: date)
+        breadcrumbManager?.retrieveBreadcrumbsFromDate(date: date) {
             let breadcrumbs = self.breadcrumbManager?.getBreadcrumbsFromDateId(dateId: dateId!)
             if (breadcrumbs == nil) {
                 // This should never happen unless internet shits out?
             } else {
                 self.mapView.clear()
-                var averageLat = 0.0
-                var averageLong = 0.0
+                self.currentMarkers?.removeAll()
                 // Drop a pin everywhere I was
                 for data in (breadcrumbs)! {
                     let breadcrumb = data.value
                     let position = CLLocationCoordinate2D(latitude: breadcrumb.latitude, longitude: breadcrumb.longitude)
-                    averageLat += breadcrumb.latitude
-                    averageLong += breadcrumb.longitude
                     
-                    let marker = GMSMarker(position: position)
-                    marker.title = data.key
-                    marker.map = self.mapView
+                    self.addMarker(markerPosition: position, title: data.key)
                 }
-                averageLat /= Double((breadcrumbs?.count)!)
-                averageLong /= Double((breadcrumbs?.count)!)
-                let camera = CLLocationCoordinate2D(latitude: averageLat, longitude: averageLong)
-                self.cameraMoveToLocation(toLocation: camera, zoom: 15)
-                
                 self.regenerateSlider(dateId: dateId!)
-                
+                if focusOnMarker {
+                    self.initializeSliderValueAndMoveCamera()
+                }
             }
         }
-        view.endEditing(true)
     }
     
     @objc func dateCancelled() {
