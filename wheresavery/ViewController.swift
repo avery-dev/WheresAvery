@@ -8,14 +8,15 @@
 
 import UIKit
 import GoogleMaps
+import Firebase
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     private var initialRecenterDone = false
     private var currentLocation: CLLocation?
     private var lastUpdateTime: Date? // Last UI Map Upload Time
-    private var dateFormatter: DateFormatter?
-    private var timeFormatter: DateFormatter?
+    private var dateFormatter = DateFormatter()
+    private var timeFormatter = DateFormatter()
     private var datePicker: UIDatePicker?
     private var breadcrumbManager: BreadcrumbManager?
     private var breadcrumbKeys: [String]?
@@ -34,8 +35,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Firebase initialization
-        breadcrumbManager = BreadcrumbManager()
         self.timeSlider.isEnabled = false
+        breadcrumbManager = BreadcrumbManager()
         breadcrumbManager?.retrieveBreadcrumbsFromDate(date: Date()) {
             self.locationManager.distanceFilter = CONSTANTS.DISTANCE.MinimumDistanceFilter
             self.locationManager.startUpdatingLocation()
@@ -43,10 +44,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         
         // Date-Time Formatter initialization
-        dateFormatter = DateFormatter()
-        dateFormatter?.dateFormat = CONSTANTS.TIME.DateFormat
-        timeFormatter = DateFormatter()
-        timeFormatter?.dateFormat = CONSTANTS.TIME.HourFormat
+        dateFormatter.dateFormat = CONSTANTS.TIME.DateFormat
+        timeFormatter.dateFormat = CONSTANTS.TIME.HourFormat
         
         // UI
         InitializeUIComponents()
@@ -79,7 +78,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         // Upload data
         uploadLocation(location: currentLoc)
-        regenerateSlider(dateId: (dateFormatter?.string(from: currentLoc.timestamp))!)
+        regenerateSlider(dateId: (dateFormatter.string(from: currentLoc.timestamp)))
     }
     
     func cameraMoveToLocation(toLocation: CLLocationCoordinate2D?, zoom: Float = 17, animate: Bool = true) {
@@ -100,8 +99,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         ])!) {
             // If it is today, update the map
             if Calendar.current.isDateInToday(Date()) {
-                let dateId = (self.dateFormatter?.string(from: location.timestamp))!
-                let timeId = (self.timeFormatter?.string(from: location.timestamp))!
+                let dateId = (self.dateFormatter.string(from: location.timestamp))
+                let timeId = (self.timeFormatter.string(from: location.timestamp))
                 self.addMarker(markerPosition: location.coordinate, title: timeId)
                 self.regenerateSlider(dateId: dateId)
             }
@@ -133,7 +132,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         datePicker = UIDatePicker()
         datePicker?.datePickerMode = .date
         datePicker?.maximumDate = Date()
-        datePicker?.minimumDate = dateFormatter?.date(from: CONSTANTS.TIME.DateSelectionStartDate)
+        datePicker?.minimumDate = dateFormatter.date(from: CONSTANTS.TIME.DateSelectionStartDate)
         let toolBar = UIToolbar()
         toolBar.barStyle = .default
         toolBar.isTranslucent = true
@@ -153,7 +152,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         dateField.inputAccessoryView = toolBar
         dateField.inputView = datePicker
-        dateField.text = dateFormatter?.string(from: Date())
+        dateField.text = dateFormatter.string(from: Date())
         
         view.bringSubview(toFront: timeContainer)
     }
@@ -192,16 +191,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     @objc func datePicked() {
-        let dateId = dateFormatter?.string(from: datePicker!.date)
+        let dateId = dateFormatter.string(from: datePicker!.date)
         dateField.text = dateId
         updateMapUIWithDate(date: datePicker!.date)
         view.endEditing(true)
     }
     
     func updateMapUIWithDate(date: Date, focusOnMarker: Bool = true) {
-        let dateId = dateFormatter?.string(from: date)
+        let dateId = dateFormatter.string(from: date)
         breadcrumbManager?.retrieveBreadcrumbsFromDate(date: date) {
-            let breadcrumbs = self.breadcrumbManager?.getBreadcrumbsFromDateId(dateId: dateId!)
+            let breadcrumbs = self.breadcrumbManager?.getBreadcrumbsFromDateId(dateId: dateId)
             if (breadcrumbs == nil) {
                 // This should never happen unless internet shits out?
             } else {
@@ -214,7 +213,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     
                     self.addMarker(markerPosition: position, title: data.key)
                 }
-                self.regenerateSlider(dateId: dateId!)
+                self.regenerateSlider(dateId: dateId)
                 if focusOnMarker {
                     self.initializeSliderValueAndMoveCamera()
                 }

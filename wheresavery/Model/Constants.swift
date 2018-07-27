@@ -14,7 +14,7 @@ struct CONSTANTS {
     }
 
     struct DATA {
-        static let User = "Avery"
+        static let User = "TEST"
         static let Latitude = "latitude"
         static let Longitude = "longitude"
         static let Timestamp = "timestamp"
